@@ -394,48 +394,80 @@ export default function Home() {
         </div>
         <ul className="studio-grid" aria-label="联合举办光点计划的校内工作室">
           <li>
-            <img
-              src="/studios/glimmer.webp"
-              alt="微光工作室标志"
-              width="52"
-              height="52"
-              loading="lazy"
-              decoding="async"
-            />
-            <b>微光工作室</b>
+            <a
+              href="https://www.glimmer.org.cn/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="访问微光工作室网站"
+            >
+              <img
+                src="/studios/glimmer.webp"
+                alt=""
+                width="52"
+                height="52"
+                loading="lazy"
+                decoding="async"
+              />
+              <b>微光工作室</b>
+              <ArrowIcon direction="up-right" />
+            </a>
           </li>
           <li>
-            <img
-              src="/studios/embedded.webp"
-              alt="嵌入式工作室标志"
-              width="52"
-              height="52"
-              loading="lazy"
-              decoding="async"
-            />
-            <b>嵌入式工作室</b>
+            <a
+              href="https://uestc404.github.io/Embedded-Studio/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="访问嵌入式工作室网站"
+            >
+              <img
+                src="/studios/embedded.webp"
+                alt=""
+                width="52"
+                height="52"
+                loading="lazy"
+                decoding="async"
+              />
+              <b>嵌入式工作室</b>
+              <ArrowIcon direction="up-right" />
+            </a>
           </li>
           <li>
-            <img
-              src="/studios/yolo.webp"
-              alt="YOLO 工作室标志"
-              width="52"
-              height="52"
-              loading="lazy"
-              decoding="async"
-            />
-            <b>YOLO 工作室</b>
+            <a
+              href="https://github.com/uestc-yolo-studio"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="访问 YOLO 工作室 GitHub"
+            >
+              <img
+                src="/studios/yolo.webp"
+                alt=""
+                width="52"
+                height="52"
+                loading="lazy"
+                decoding="async"
+              />
+              <b>YOLO 工作室</b>
+              <ArrowIcon direction="up-right" />
+            </a>
           </li>
           <li>
-            <img
-              src="/studios/yilu.webp"
-              alt="一路工作室标志"
-              width="52"
-              height="52"
-              loading="lazy"
-              decoding="async"
-            />
-            <b>一路工作室</b>
+            <a
+              href="https://recruit.yilu-studio.cn/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="访问一路工作室网站"
+            >
+              <img
+                src="/studios/yilu.webp"
+                alt=""
+                width="52"
+                height="52"
+                loading="lazy"
+                decoding="async"
+              />
+              <b>一路工作室</b>
+              <ArrowIcon direction="up-right" />
+            </a>
           </li>
         </ul>
       </section>
