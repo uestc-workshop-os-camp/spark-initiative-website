@@ -1,0 +1,158 @@
+import { createHash } from 'node:crypto';
+import {
+  copyFileSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { brotliCompressSync, constants, gzipSync } from 'node:zlib';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { transformWithOxc } from 'vite';
+
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const clientBuild = join(projectRoot, 'dist/client');
+const outputDirectory = join(projectRoot, 'dist-static');
+
+if (basename(outputDirectory) !== 'dist-static') {
+  throw new Error(
+    `Refusing to clear unexpected output path: ${outputDirectory}`,
+  );
+}
+
+rmSync(outputDirectory, { recursive: true, force: true });
+mkdirSync(outputDirectory, { recursive: true });
+
+const pageSource = readFileSync(join(projectRoot, 'app/page.tsx'), 'utf8');
+const transformedPage = await transformWithOxc(pageSource, 'app/page.tsx', {
+  lang: 'tsx',
+});
+const temporaryPageModule = join(projectRoot, `.spark-page-${process.pid}.mjs`);
+writeFileSync(temporaryPageModule, transformedPage.code);
+const { default: Home } = await import(pathToFileURL(temporaryPageModule).href);
+rmSync(temporaryPageModule, { force: true });
+
+const pageMarkup = renderToStaticMarkup(createElement(Home));
+const cssDirectory = join(clientBuild, '_next/static/css');
+const cssFiles = readdirSync(cssDirectory).filter((file) =>
+  file.endsWith('.css'),
+);
+if (cssFiles.length !== 1) {
+  throw new Error(
+    `Expected one compiled stylesheet, found ${cssFiles.length}.`,
+  );
+}
+
+const css = readFileSync(join(cssDirectory, cssFiles[0]));
+const cssHash = createHash('sha256').update(css).digest('hex').slice(0, 10);
+const cssFilename = `site.${cssHash}.css`;
+const assetsDirectory = join(outputDirectory, 'assets');
+mkdirSync(assetsDirectory, { recursive: true });
+writeFileSync(join(assetsDirectory, cssFilename), css);
+
+const copyDirectoryFiles = (
+  sourceDirectory,
+  destinationDirectory,
+  filter = () => true,
+) => {
+  mkdirSync(destinationDirectory, { recursive: true });
+  for (const file of readdirSync(sourceDirectory)) {
+    if (!filter(file)) continue;
+    copyFileSync(join(sourceDirectory, file), join(destinationDirectory, file));
+  }
+};
+
+copyDirectoryFiles(
+  join(projectRoot, 'app/fonts'),
+  join(outputDirectory, 'fonts'),
+  (file) =>
+    file.endsWith('.woff2') || file === 'OFL.txt' || file === 'README.md',
+);
+copyDirectoryFiles(
+  join(projectRoot, 'public/studios'),
+  join(outputDirectory, 'studios'),
+  (file) => file.endsWith('.webp'),
+);
+copyFileSync(
+  join(projectRoot, 'public/favicon.svg'),
+  join(outputDirectory, 'favicon.svg'),
+);
+copyFileSync(
+  join(projectRoot, 'public/og.png'),
+  join(outputDirectory, 'og.png'),
+);
+
+const title = '光点计划 IV｜让对系统的好奇，有地方发生。';
+const description =
+  '光点计划 IV：OS 方向以 rCore 为学习材料，RDMA 方向以 RDMA101 为学习材料。';
+const siteOrigin = (process.env.SITE_URL ?? 'https://csinfra.cn').replace(
+  /\/$/,
+  '',
+);
+
+const html = `<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${title}</title>
+    <meta name="description" content="${description}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:title" content="${title}">
+    <meta property="og:description" content="${description}">
+    <meta property="og:image" content="${siteOrigin}/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${title}">
+    <meta name="twitter:description" content="${description}">
+    <meta name="twitter:image" content="${siteOrigin}/og.png">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/fonts/google-sans-flex-latin-v1.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/noto-sans-sc-spark-v1.woff2" as="font" type="font/woff2" crossorigin>
+    <style>
+      @font-face { font-family: "Spark Google Sans Flex"; src: url("/fonts/google-sans-flex-latin-v1.woff2") format("woff2"); font-style: normal; font-weight: 100 1000; font-display: swap; }
+      @font-face { font-family: "Spark Noto Sans SC"; src: url("/fonts/noto-sans-sc-spark-v1.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
+      @font-face { font-family: "Spark Geist Mono"; src: url("/fonts/geist-mono-latin-v1.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
+      :root { --font-google-sans-flex: "Spark Google Sans Flex"; --font-noto-sans-sc: "Spark Noto Sans SC"; --font-geist-mono: "Spark Geist Mono"; }
+    </style>
+    <link rel="stylesheet" href="/assets/${cssFilename}">
+  </head>
+  <body class="antialiased">${pageMarkup}</body>
+</html>
+`;
+
+const writeCompressed = (file, content) => {
+  const bytes = Buffer.isBuffer(content) ? content : Buffer.from(content);
+  writeFileSync(file, bytes);
+  writeFileSync(`${file}.gz`, gzipSync(bytes, { level: 9 }));
+  writeFileSync(
+    `${file}.br`,
+    brotliCompressSync(bytes, {
+      params: { [constants.BROTLI_PARAM_QUALITY]: 11 },
+    }),
+  );
+};
+
+writeCompressed(join(outputDirectory, 'index.html'), html);
+writeCompressed(join(assetsDirectory, cssFilename), css);
+
+writeFileSync(
+  join(outputDirectory, '_headers'),
+  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
+);
+
+const htmlBytes = statSync(join(outputDirectory, 'index.html')).size;
+const htmlBrotliBytes = statSync(join(outputDirectory, 'index.html.br')).size;
+const cssBytes = statSync(join(assetsDirectory, cssFilename)).size;
+const cssBrotliBytes = statSync(
+  join(assetsDirectory, `${cssFilename}.br`),
+).size;
+
+console.log(
+  `Static build complete: HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B JavaScript.`,
+);
