@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="光点计划 IV 的 OS 与 RDMA 方向学习进度。"
+    />
+    <title>学习进度｜光点计划 IV</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/google-sans-flex-latin-v1.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/noto-sans-sc-spark-v1.woff2?v=2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="__RANK_CSS__" />
+  </head>
+  <body>
+    <header class="rank-header">
+      <a class="brand" href="/" aria-label="返回光点计划首页">
+        <span class="spark-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <span>光点计划</span>
+      </a>
+      <span class="header-meta">PROGRESS / 2026</span>
+      <a class="home-link" href="/">
+        返回首页
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M17 7 7 17M7 7v10h10" />
+        </svg>
+      </a>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="kicker"><span></span> OS / RDMA · LEARNING PROGRESS</p>
+          <h1 id="page-title">学习进度</h1>
+        </div>
+        <p class="intro-copy">
+          这里将汇总 OS 与 RDMA 两个方向的学习进度。目前已接入 OS
+          方向，RDMA 方向将在实验开放后接入。
+        </p>
+      </section>
+
+      <section class="progress-shell" aria-label="方向学习进度">
+        <div class="direction-tabs" role="tablist" aria-label="选择活动方向">
+          <button
+            class="direction-tab is-active"
+            id="direction-os"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="panel-os"
+            data-direction="os"
+          >
+            <span class="direction-index">01</span>
+            <span class="direction-name">OS</span>
+          </button>
+          <button
+            class="direction-tab"
+            id="direction-rdma"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-rdma"
+            data-direction="rdma"
+          >
+            <span class="direction-index">02</span>
+            <span class="direction-name">RDMA</span>
+          </button>
+        </div>
+
+        <div
+          class="direction-panel"
+          id="panel-os"
+          role="tabpanel"
+          aria-labelledby="direction-os"
+        >
+          <div class="rank-toolbar">
+            <div class="stage-tabs" role="tablist" aria-label="选择 OS 学习阶段">
+              <button
+                class="stage-tab is-active"
+                type="button"
+                role="tab"
+                aria-selected="true"
+                data-stage="rust"
+              >
+                Rust
+              </button>
+              <button
+                class="stage-tab"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                data-stage="rcore"
+              >
+                rCore
+              </button>
+            </div>
+
+            <div class="toolbar-actions">
+              <label class="search-field">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m16 16 4 4" />
+                </svg>
+                <span class="sr-only">搜索参与者</span>
+                <input
+                  id="participant-search"
+                  type="search"
+                  placeholder="搜索参与者"
+                  autocomplete="off"
+                />
+              </label>
+              <button class="refresh-button" id="refresh-button" type="button">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M20 6v5h-5" />
+                  <path d="M4 18v-5h5" />
+                  <path d="M6.1 9a7 7 0 0 1 11.6-2.6L20 11M4 13l2.3 4.6A7 7 0 0 0 17.9 15" />
+                </svg>
+                刷新
+              </button>
+            </div>
+          </div>
+
+          <div class="rank-meta" aria-live="polite">
+            <div>
+              <span class="meta-label">当前阶段</span>
+              <strong id="stage-name">Rust 基础</strong>
+            </div>
+            <div>
+              <span class="meta-label">参与者</span>
+              <strong id="participant-count">—</strong>
+            </div>
+          </div>
+
+          <div class="table-frame">
+            <table class="rank-table">
+              <caption class="sr-only">OS 方向学习进度排行榜</caption>
+              <thead id="rank-head"></thead>
+              <tbody id="rank-body">
+                <tr class="loading-row">
+                  <td colspan="6">
+                    <span class="loading-line"></span>
+                    <span class="loading-line"></span>
+                    <span class="loading-line"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination" aria-label="排行榜分页">
+            <span id="range-label">—</span>
+            <div>
+              <button id="previous-page" type="button" disabled>上一页</button>
+              <span id="page-label">1 / 1</span>
+              <button id="next-page" type="button" disabled>下一页</button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="direction-panel rdma-panel"
+          id="panel-rdma"
+          role="tabpanel"
+          aria-labelledby="direction-rdma"
+          hidden
+        >
+          <div class="rdma-signal" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="rdma-message">
+            <span class="direction-index">02</span>
+            <p class="kicker">RDMA / COMING LATER</p>
+            <h2>实验仍在开发。</h2>
+            <p>
+              RDMA 方向的进度页面将在实验开放后接入。现在可以先从
+              RDMA101 开始。
+            </p>
+            <a href="https://renfeng.org/RDMA101/" target="_blank" rel="noreferrer">
+              阅读 RDMA101
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M7 17 17 7M7 7h10v10" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>光点计划 IV · 2026</span>
+      <span>OS / RDMA · LEARNING IN PUBLIC</span>
+    </footer>
+
+    <script type="module" src="__RANK_JS__"></script>
+  </body>
+</html>

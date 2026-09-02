@@ -48,6 +48,7 @@
   --section-space: clamp(96px, 8vw, 128px);
   --section-space-compact: clamp(84px, 7vw, 108px);
   --section-gap: clamp(52px, 4.5vw, 72px);
+  --section-rule: rgba(16, 18, 22, 0.14);
   --background: #f8f7f2;
   --foreground: #101216;
   --card: #ffffff;
@@ -588,11 +589,10 @@ h1 {
 .path-link-button {
   width: fit-content;
 }
-
 .method-section {
   width: min(calc(100% - var(--page-gutter) - var(--page-gutter)), 1440px);
   margin: 0 auto;
-  border-top: 1px solid rgba(16, 18, 22, 0.14);
+  border-top: 1px solid var(--section-rule);
   padding: var(--section-space-compact) 0;
 }
 
@@ -806,6 +806,7 @@ h1 {
 .campus-section {
   width: min(calc(100% - var(--page-gutter) - var(--page-gutter)), 1440px);
   margin: 0 auto;
+  border-bottom: 1px solid var(--section-rule);
   padding: var(--section-space) 0;
 }
 .campus-heading {
@@ -895,6 +896,12 @@ h1 {
   position: absolute;
   z-index: -1;
   inset: 0;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0 40px,
+    #000 112px
+  );
+  mask-image: linear-gradient(to bottom, transparent 0 40px, #000 112px);
   pointer-events: none;
 }
 .closing-arc {
@@ -989,7 +996,7 @@ h1 {
   margin: 0 auto;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  border-top: 1px solid rgba(16, 18, 22, 0.14);
+  border-top: 1px solid var(--section-rule);
 }
 .site-footer > div {
   display: flex;
@@ -1398,8 +1405,10 @@ h1 {
   .site-header {
     height: 80px;
   }
-  .site-header > a:last-child {
-    display: none;
+  .site-header > [data-slot='button'] {
+    height: 40px;
+    padding-inline: 16px;
+    font-size: 13px;
   }
   .hero-shell {
     min-height: auto;

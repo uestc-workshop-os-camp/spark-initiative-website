@@ -95,11 +95,11 @@ export default function Home() {
         </nav>
 
         <ActionLink
-          href="#paths"
-          aria-label="查看活动方向"
-          className="h-11 rounded-full bg-ink px-5 !text-white shadow-none hover:bg-blue"
+          href="/rank/"
+          aria-label="查看学习进度"
+          className="h-11 rounded-full border-ink/20 bg-white/45 px-5 text-ink shadow-none hover:border-blue/35 hover:bg-white/80 hover:text-blue"
         >
-          查看方向 <ArrowIcon direction="right" />
+          学习进度 <ArrowIcon direction="right" />
         </ActionLink>
       </header>
 

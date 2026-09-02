@@ -10,11 +10,11 @@ and prevents the deployment from carrying every language subset.
 - `geist-mono-latin-v1.woff2`: Latin variable subset of Geist Mono. Its embedded
   metadata identifies Copyright 2024 The Geist Project Authors and the Open Font
   License.
-- `noto-sans-sc-spark-v1.woff2`: page-specific Simplified Chinese variable subset.
+- `noto-sans-sc-spark-v1.woff2`: site-specific Simplified Chinese variable subset.
 
-`noto-sans-sc-spark-v1.woff2` is a page-specific variable-font subset generated
+`noto-sans-sc-spark-v1.woff2` is a site-specific variable-font subset generated
 from the official `NotoSansSC-VF.otf`. It contains the non-ASCII characters used
-by `app/page.tsx` and `app/layout.tsx`, while preserving the original variable
+by the landing page and progress page, while preserving the original variable
 weight axis.
 
 Source font:
@@ -32,5 +32,5 @@ To regenerate it after changing Chinese copy:
 node scripts/subset-noto-font.mjs /path/to/NotoSansSC-VF.otf
 ```
 
-If the output changes after deployment, bump the filename and update the path in
-`app/layout.tsx` so long-lived caches cannot retain the older glyph set.
+If the output changes after deployment, bump the font URL version used by the
+static homepage and rank page so long-lived caches cannot retain older glyphs.

@@ -113,10 +113,10 @@ const html = `<!doctype html>
     <meta name="twitter:image" content="${siteOrigin}/og.png">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/fonts/google-sans-flex-latin-v1.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/noto-sans-sc-spark-v1.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/noto-sans-sc-spark-v1.woff2?v=2" as="font" type="font/woff2" crossorigin>
     <style>
       @font-face { font-family: "Spark Google Sans Flex"; src: url("/fonts/google-sans-flex-latin-v1.woff2") format("woff2"); font-style: normal; font-weight: 100 1000; font-display: swap; }
-      @font-face { font-family: "Spark Noto Sans SC"; src: url("/fonts/noto-sans-sc-spark-v1.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
+      @font-face { font-family: "Spark Noto Sans SC"; src: url("/fonts/noto-sans-sc-spark-v1.woff2?v=2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
       @font-face { font-family: "Spark Geist Mono"; src: url("/fonts/geist-mono-latin-v1.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
       :root { --font-google-sans-flex: "Spark Google Sans Flex"; --font-noto-sans-sc: "Spark Noto Sans SC"; --font-geist-mono: "Spark Geist Mono"; }
     </style>
@@ -141,9 +141,37 @@ const writeCompressed = (file, content) => {
 writeCompressed(join(outputDirectory, 'index.html'), html);
 writeCompressed(join(assetsDirectory, cssFilename), css);
 
+const rankSourceDirectory = join(projectRoot, 'public/rank');
+const rankOutputDirectory = join(outputDirectory, 'rank');
+const rankAssetsDirectory = join(rankOutputDirectory, 'assets');
+mkdirSync(rankAssetsDirectory, { recursive: true });
+
+const rankCss = readFileSync(join(rankSourceDirectory, 'rank.css'));
+const rankScript = readFileSync(join(rankSourceDirectory, 'rank.js'));
+const rankCssHash = createHash('sha256')
+  .update(rankCss)
+  .digest('hex')
+  .slice(0, 10);
+const rankScriptHash = createHash('sha256')
+  .update(rankScript)
+  .digest('hex')
+  .slice(0, 10);
+const rankCssFilename = `rank.${rankCssHash}.css`;
+const rankScriptFilename = `rank.${rankScriptHash}.js`;
+const rankHtml = readFileSync(
+  join(rankSourceDirectory, 'index.html'),
+  'utf8',
+)
+  .replace('__RANK_CSS__', `/rank/assets/${rankCssFilename}`)
+  .replace('__RANK_JS__', `/rank/assets/${rankScriptFilename}`);
+
+writeCompressed(join(rankOutputDirectory, 'index.html'), rankHtml);
+writeCompressed(join(rankAssetsDirectory, rankCssFilename), rankCss);
+writeCompressed(join(rankAssetsDirectory, rankScriptFilename), rankScript);
+
 writeFileSync(
   join(outputDirectory, '_headers'),
-  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
+  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
 );
 
 const htmlBytes = statSync(join(outputDirectory, 'index.html')).size;
@@ -152,7 +180,13 @@ const cssBytes = statSync(join(assetsDirectory, cssFilename)).size;
 const cssBrotliBytes = statSync(
   join(assetsDirectory, `${cssFilename}.br`),
 ).size;
+const rankScriptBytes = statSync(
+  join(rankAssetsDirectory, rankScriptFilename),
+).size;
+const rankScriptBrotliBytes = statSync(
+  join(rankAssetsDirectory, `${rankScriptFilename}.br`),
+).size;
 
 console.log(
-  `Static build complete: HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B JavaScript.`,
+  `Static build complete: homepage HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B homepage JavaScript; rank JavaScript ${rankScriptBytes} B (${rankScriptBrotliBytes} B Brotli).`,
 );

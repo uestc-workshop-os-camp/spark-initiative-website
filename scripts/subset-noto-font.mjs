@@ -15,7 +15,15 @@ if (!sourceFont) {
   process.exit(1);
 }
 
-const sourceFiles = ['app/page.tsx', 'app/layout.tsx'];
+const sourceFiles = process.argv.slice(4);
+if (sourceFiles.length === 0) {
+  sourceFiles.push(
+    'app/page.tsx',
+    'app/layout.tsx',
+    'public/rank/index.html',
+    'public/rank/rank.js',
+  );
+}
 const sourceText = sourceFiles
   .map((file) => readFileSync(file, 'utf8'))
   .join('\n');
