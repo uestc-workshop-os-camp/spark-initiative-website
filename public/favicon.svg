@@ -6,7 +6,6 @@
   role="img"
   aria-label="光点计划"
 >
-  <rect width="64" height="64" rx="18" fill="#f8f7f2" />
   <defs>
     <path
       id="petal"
