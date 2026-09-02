@@ -77,6 +77,27 @@ function initials(username) {
   return String(username).replace(/[^a-z0-9]/gi, '').slice(0, 2) || 'OS';
 }
 
+function githubAvatarURL(value) {
+  try {
+    const url = new URL(String(value || ''));
+    return url.protocol === 'https:' &&
+      url.hostname === 'avatars.githubusercontent.com'
+      ? url.href
+      : '';
+  } catch {
+    return '';
+  }
+}
+
+function participantMark(row, username) {
+  const fallback = escapeHTML(initials(username));
+  const avatarURL = githubAvatarURL(row.header_url);
+  const avatar = avatarURL
+    ? `<img src="${escapeHTML(avatarURL)}" alt="" width="38" height="38" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-participant-avatar>`
+    : '';
+  return `<span class="participant-mark"><span aria-hidden="true">${fallback}</span>${avatar}</span>`;
+}
+
 async function fetchPage(mode, page) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 5000);
@@ -205,12 +226,13 @@ function rustRow(row, fallbackRank) {
   const points = number(row.points);
   const total = number(row.total);
   const progress = total > 0 ? percentage((points / total) * 100) : 0;
-  const username = escapeHTML(row.username || 'unknown');
+  const rawUsername = String(row.username || 'unknown');
+  const username = escapeHTML(rawUsername);
   return `<tr data-rank="${rank}">
     <td class="cell-rank"><span class="rank-number">${rank}</span></td>
     <td class="cell-participant">
       <span class="participant">
-        <span class="participant-mark">${escapeHTML(initials(username))}</span>
+        ${participantMark(row, rawUsername)}
         <strong>${username}</strong>
       </span>
     </td>
@@ -229,7 +251,8 @@ function rustRow(row, fallbackRank) {
 
 function rcoreRow(row, fallbackRank) {
   const rank = Math.max(1, number(row.rank, fallbackRank));
-  const username = escapeHTML(row.username || 'unknown');
+  const rawUsername = String(row.username || 'unknown');
+  const username = escapeHTML(rawUsername);
   const chapters = ['ch3', 'ch4', 'ch5', 'ch6', 'ch8'];
   const chapterMarkup = chapters
     .map(
@@ -241,7 +264,7 @@ function rcoreRow(row, fallbackRank) {
     <td class="cell-rank"><span class="rank-number">${rank}</span></td>
     <td class="cell-participant">
       <span class="participant">
-        <span class="participant-mark">${escapeHTML(initials(username))}</span>
+        ${participantMark(row, rawUsername)}
         <strong>${username}</strong>
       </span>
     </td>
@@ -278,6 +301,11 @@ function renderRows() {
     elements.body.innerHTML = pageRows
       .map((row, index) => renderer(row, start + index + 1))
       .join('');
+    elements.body
+      .querySelectorAll('[data-participant-avatar]')
+      .forEach((avatar) =>
+        avatar.addEventListener('error', () => avatar.remove(), { once: true }),
+      );
   }
 
   elements.range.textContent = visibleRows.length
