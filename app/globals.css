@@ -120,7 +120,7 @@ a {
   gap: 10px;
   margin-bottom: 30px;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 12px;
+  font-size: var(--type-caption);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -245,7 +245,7 @@ h1 {
 }
 .visual-core strong {
   font:
-    600 10px/1.25 var(--font-geist-mono),
+    600 var(--type-micro) / 1.25 var(--font-geist-mono),
     monospace;
   letter-spacing: 0.08em;
   text-align: center;
@@ -289,7 +289,7 @@ h1 {
 .path-node small {
   margin-top: 1px;
   color: #777972;
-  font: 500 8px var(--font-geist-mono);
+  font: 500 var(--type-micro) var(--font-geist-mono);
   letter-spacing: 0.08em;
 }
 .path-node-os {
@@ -311,7 +311,7 @@ h1 {
   position: absolute;
   color: #5f6683;
   font:
-    500 10px var(--font-geist-mono),
+    500 var(--type-micro) var(--font-geist-mono),
     monospace;
   letter-spacing: 0.03em;
 }
@@ -330,7 +330,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--type-caption);
   font-weight: 600;
 }
 .visual-note span {
@@ -340,7 +340,7 @@ h1 {
   place-items: center;
   border: 1px solid rgba(16, 18, 22, 0.2);
   border-radius: 50%;
-  font: 500 9px var(--font-geist-mono);
+  font: 500 var(--type-micro) var(--font-geist-mono);
 }
 .visual-note-top {
   top: 2%;
@@ -388,7 +388,7 @@ h1 {
 .section-kicker {
   align-self: start;
   margin: 10px 0 0;
-  font: 600 11px var(--font-geist-mono);
+  font: 600 var(--type-label) var(--font-geist-mono);
   letter-spacing: 0.08em;
 }
 .section-title {
@@ -426,7 +426,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font: 600 11px var(--font-geist-mono);
+  font: 600 var(--type-label) var(--font-geist-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -458,7 +458,7 @@ h1 {
 }
 .path-material {
   margin: 18px 0 0;
-  font: 600 11px var(--font-geist-mono);
+  font: 600 var(--type-label) var(--font-geist-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -556,7 +556,7 @@ h1 {
   padding: 26px 30px 28px;
 }
 .step-no {
-  font: 500 10px var(--font-geist-mono);
+  font: 500 var(--type-micro) var(--font-geist-mono);
 }
 .method-steps h3 {
   margin: auto 0 14px;
@@ -565,7 +565,7 @@ h1 {
   letter-spacing: -0.045em;
 }
 .method-steps small {
-  font: 600 9px var(--font-geist-mono);
+  font: 600 var(--type-micro) var(--font-geist-mono);
   letter-spacing: 0.1em;
 }
 
@@ -697,14 +697,14 @@ h1 {
   place-items: center;
   border-radius: 50%;
   background: #dce5ff;
-  font: 500 9px var(--font-geist-mono);
+  font: 500 var(--type-micro) var(--font-geist-mono);
 }
 .board-note b {
   font-size: 14px;
 }
 .board-note small {
   color: #73766d;
-  font-size: 10px;
+  font-size: var(--type-label);
 }
 .note-one {
   top: 10%;
@@ -880,7 +880,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 12px;
-  font: 600 10px var(--font-geist-mono);
+  font: 600 var(--type-label) var(--font-geist-mono);
   letter-spacing: 0.09em;
 }
 .closing-badge .spark-mark {
@@ -989,47 +989,6 @@ h1 {
 
 .path-card {
   position: relative;
-}
-.path-card::before {
-  position: absolute;
-  z-index: 0;
-  top: -120px;
-  right: -110px;
-  width: 330px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(83, 115, 255, 0.2),
-    rgba(83, 115, 255, 0) 68%
-  );
-  content: '';
-  pointer-events: none;
-  transition:
-    transform 720ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 420ms ease;
-}
-.path-card-rdma::before {
-  top: auto;
-  right: auto;
-  bottom: -120px;
-  left: -110px;
-  background: radial-gradient(
-    circle,
-    rgba(8, 118, 108, 0.2),
-    rgba(8, 118, 108, 0) 68%
-  );
-}
-.path-card > * {
-  position: relative;
-  z-index: 1;
-}
-.path-card:hover::before {
-  opacity: 1;
-  transform: translate(-22px, 18px) scale(1.12);
-}
-.path-card-rdma:hover::before {
-  transform: translate(22px, -18px) scale(1.12);
 }
 .path-card:hover h3 {
   letter-spacing: 0.005em;
@@ -1335,7 +1294,7 @@ h1 {
     justify-content: flex-start;
     gap: 14px;
     padding: 0 14px;
-    font-size: 10px;
+    font-size: var(--type-micro);
     letter-spacing: 0.08em;
   }
   .manifesto-strip span:nth-of-type(3),

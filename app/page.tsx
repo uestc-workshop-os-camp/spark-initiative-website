@@ -377,7 +377,7 @@ export default function Home() {
         aria-labelledby="campus-title"
       >
         <div className="campus-heading">
-          <p className="section-kicker">ROOTED IN UESTC</p>
+          <p className="section-kicker">04 / ROOTED IN UESTC</p>
           <div className="campus-narrative">
             <h2 id="campus-title" className="section-title">
               探索计算机系统，不止于一次活动。

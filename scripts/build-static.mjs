@@ -163,10 +163,7 @@ const rankScriptHash = createHash('sha256')
   .slice(0, 10);
 const rankCssFilename = `rank.${rankCssHash}.css`;
 const rankScriptFilename = `rank.${rankScriptHash}.js`;
-const rankHtml = readFileSync(
-  join(rankSourceDirectory, 'index.html'),
-  'utf8',
-)
+const rankHtml = readFileSync(join(rankSourceDirectory, 'index.html'), 'utf8')
   .replace('__RANK_CSS__', `/rank/assets/${rankCssFilename}`)
   .replace('__RANK_JS__', `/rank/assets/${rankScriptFilename}`);
 
@@ -174,9 +171,38 @@ writeCompressed(join(rankOutputDirectory, 'index.html'), rankHtml);
 writeCompressed(join(rankAssetsDirectory, rankCssFilename), rankCss);
 writeCompressed(join(rankAssetsDirectory, rankScriptFilename), rankScript);
 
+const campSourceDirectory = join(projectRoot, 'public/camp');
+const campOutputDirectory = join(outputDirectory, 'camp');
+const campAssetsDirectory = join(campOutputDirectory, 'assets');
+mkdirSync(campAssetsDirectory, { recursive: true });
+
+const campCss = Buffer.concat([
+  sharedShellCss,
+  Buffer.from('\n'),
+  readFileSync(join(campSourceDirectory, 'camp.css')),
+]);
+const campScript = readFileSync(join(campSourceDirectory, 'camp.js'));
+const campCssHash = createHash('sha256')
+  .update(campCss)
+  .digest('hex')
+  .slice(0, 10);
+const campScriptHash = createHash('sha256')
+  .update(campScript)
+  .digest('hex')
+  .slice(0, 10);
+const campCssFilename = `camp.${campCssHash}.css`;
+const campScriptFilename = `camp.${campScriptHash}.js`;
+const campHtml = readFileSync(join(campSourceDirectory, 'index.html'), 'utf8')
+  .replace('__CAMP_CSS__', `/camp/assets/${campCssFilename}`)
+  .replace('__CAMP_JS__', `/camp/assets/${campScriptFilename}`);
+
+writeCompressed(join(campOutputDirectory, 'index.html'), campHtml);
+writeCompressed(join(campAssetsDirectory, campCssFilename), campCss);
+writeCompressed(join(campAssetsDirectory, campScriptFilename), campScript);
+
 writeFileSync(
   join(outputDirectory, '_headers'),
-  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
+  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/camp/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/camp/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
 );
 
 const htmlBytes = statSync(join(outputDirectory, 'index.html')).size;
@@ -191,7 +217,13 @@ const rankScriptBytes = statSync(
 const rankScriptBrotliBytes = statSync(
   join(rankAssetsDirectory, `${rankScriptFilename}.br`),
 ).size;
+const campScriptBytes = statSync(
+  join(campAssetsDirectory, campScriptFilename),
+).size;
+const campScriptBrotliBytes = statSync(
+  join(campAssetsDirectory, `${campScriptFilename}.br`),
+).size;
 
 console.log(
-  `Static build complete: homepage HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B homepage JavaScript; rank JavaScript ${rankScriptBytes} B (${rankScriptBrotliBytes} B Brotli).`,
+  `Static build complete: homepage HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B homepage JavaScript; rank JavaScript ${rankScriptBytes} B (${rankScriptBrotliBytes} B Brotli); camp JavaScript ${campScriptBytes} B (${campScriptBrotliBytes} B Brotli).`,
 );
