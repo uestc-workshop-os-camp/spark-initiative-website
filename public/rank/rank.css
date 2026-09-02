@@ -137,10 +137,10 @@ main {
 
 h1 {
   margin: 0;
-  font-size: clamp(64px, 7.3vw, 112px);
+  font-size: clamp(42px, 4.1vw, 62px);
   font-weight: 470;
   letter-spacing: -0.035em;
-  line-height: 0.96;
+  line-height: 1.02;
 }
 
 .intro-copy {
@@ -167,14 +167,14 @@ h1 {
 
 .direction-tab {
   display: grid;
-  min-height: 138px;
+  min-height: 112px;
   cursor: pointer;
   grid-template-columns: auto 1fr;
   align-items: end;
-  gap: 24px;
+  gap: 18px;
   border: 0;
   background: rgba(255, 255, 255, 0.7);
-  padding: 24px 30px;
+  padding: 22px 26px;
   text-align: left;
   transition:
     color 220ms ease,
@@ -210,10 +210,10 @@ h1 {
 }
 
 .direction-name {
-  font-size: clamp(50px, 4.9vw, 72px);
+  font-size: clamp(30px, 3vw, 42px);
   font-weight: 560;
   letter-spacing: 0.025em;
-  line-height: 0.78;
+  line-height: 0.9;
 }
 
 .direction-panel {
@@ -706,9 +706,9 @@ tr[data-rank="3"] .rank-number {
 
 .rdma-message h2 {
   margin: 0;
-  font-size: clamp(42px, 5vw, 72px);
+  font-size: clamp(30px, 3.3vw, 44px);
   font-weight: 540;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.035em;
 }
 
 .rdma-message > p:last-of-type {
@@ -788,7 +788,7 @@ tr[data-rank="3"] .rank-number {
   }
 
   h1 {
-    font-size: clamp(58px, 21vw, 82px);
+    font-size: clamp(38px, 12vw, 48px);
   }
 
   .intro-copy {
@@ -800,12 +800,12 @@ tr[data-rank="3"] .rank-number {
   }
 
   .direction-tab {
-    min-height: 132px;
+    min-height: 108px;
     padding: 20px;
   }
 
   .direction-name {
-    font-size: clamp(42px, 12vw, 58px);
+    font-size: clamp(30px, 9vw, 36px);
   }
 
   .direction-panel {
@@ -994,7 +994,7 @@ tr[data-rank="3"] .rank-number {
   }
 
   .rdma-message h2 {
-    font-size: clamp(38px, 12vw, 54px);
+    font-size: clamp(30px, 9.5vw, 38px);
   }
 
 }
@@ -1013,7 +1013,7 @@ tr[data-rank="3"] .rank-number {
   }
 
   .direction-name {
-    font-size: 40px;
+    font-size: 34px;
   }
 }
 

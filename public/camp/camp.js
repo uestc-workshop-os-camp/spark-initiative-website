@@ -221,7 +221,7 @@ const claimPhase = async (phase, button) => {
     updatePhase({ key: phase, enabled: true, claim: result.claim });
     setNotice(
       result.claim.status === 'awaiting_acceptance'
-        ? '仓库已创建。请先接受 GitHub 的协作邀请。'
+        ? '仓库已创建。请等待并接受 GitHub 的协作邀请。'
         : '仓库已创建，可以开始实验了。',
       'info',
     );
