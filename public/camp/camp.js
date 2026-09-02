@@ -159,9 +159,6 @@ const updatePhase = (phase) => {
   if (claim.repository_url) {
     actions.append(makeLink('打开实验仓库', claim.repository_url, true));
   }
-  if (claim.invitation_url) {
-    actions.append(makeLink('查看协作邀请', claim.invitation_url));
-  }
 };
 
 const renderSignedOut = () => {
