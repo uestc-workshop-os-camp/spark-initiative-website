@@ -37,7 +37,7 @@ export function generateMetadata(): Metadata {
     metadataBase: new URL(siteOrigin),
     title,
     description,
-    icons: { icon: '/favicon.svg' },
+    icons: { icon: '/favicon.svg?v=2' },
     openGraph: {
       type: 'website',
       locale: 'zh_CN',

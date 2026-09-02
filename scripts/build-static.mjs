@@ -78,6 +78,11 @@ copyDirectoryFiles(
   join(outputDirectory, 'studios'),
   (file) => file.endsWith('.webp'),
 );
+copyDirectoryFiles(
+  join(projectRoot, 'public/brand'),
+  join(outputDirectory, 'brand'),
+  (file) => file.endsWith('.svg') || file.endsWith('.png'),
+);
 copyFileSync(
   join(projectRoot, 'public/favicon.svg'),
   join(outputDirectory, 'favicon.svg'),
@@ -111,7 +116,7 @@ const html = `<!doctype html>
     <meta name="twitter:title" content="${title}">
     <meta name="twitter:description" content="${description}">
     <meta name="twitter:image" content="${siteOrigin}/og.png">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
     <link rel="preload" href="/fonts/google-sans-flex-latin-v1.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/noto-sans-sc-spark-v1.woff2?v=2" as="font" type="font/woff2" crossorigin>
     <style>

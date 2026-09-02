@@ -859,23 +859,6 @@ h1 {
   border-bottom-color: transparent;
   animation: closing-arc-three-spin 20s linear infinite;
 }
-.closing-node {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 3px solid var(--background);
-  border-radius: 50%;
-}
-.closing-node-one {
-  top: 18%;
-  left: clamp(8%, 22vw, 24%);
-  background: #2a4ef6;
-}
-.closing-node-two {
-  right: clamp(8%, 18vw, 20%);
-  bottom: 19%;
-  background: #ff7a5c;
-}
 .closing-badge {
   display: flex;
   align-items: center;

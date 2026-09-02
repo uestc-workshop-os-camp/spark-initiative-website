@@ -477,8 +477,6 @@ export default function Home() {
           <span className="closing-arc closing-arc-one" />
           <span className="closing-arc closing-arc-two" />
           <span className="closing-arc closing-arc-three" />
-          <span className="closing-node closing-node-one" />
-          <span className="closing-node closing-node-two" />
         </div>
         <div className="closing-badge">
           <SparkMark />

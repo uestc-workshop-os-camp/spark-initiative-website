@@ -1,0 +1,24 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="2048"
+  height="2048"
+  viewBox="0 0 1024 1024"
+  role="img"
+  aria-labelledby="title description"
+>
+  <title id="title">光点计划头像</title>
+  <desc id="description">由蓝、珊瑚红、青柠绿和黑色四枚几何花瓣组成的光点计划标记</desc>
+  <rect width="1024" height="1024" fill="#f8f7f2" />
+  <defs>
+    <path
+      id="petal"
+      d="M108.75 0h93.525A15.225 15.225 0 0 1 217.5 15.225V108.75A108.75 108.75 0 0 1 108.75 217.5 108.75 108.75 0 0 1 0 108.75 108.75 108.75 0 0 1 108.75 0Z"
+    />
+  </defs>
+  <g transform="rotate(45 512 512)" shape-rendering="geometricPrecision">
+    <use href="#petal" x="272" y="272" fill="#2a4ef6" />
+    <use href="#petal" x="534.5" y="272" fill="#ff7a5c" />
+    <use href="#petal" x="272" y="534.5" fill="#a3d840" />
+    <use href="#petal" x="534.5" y="534.5" fill="#101216" />
+  </g>
+</svg>
