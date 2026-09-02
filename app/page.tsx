@@ -88,7 +88,7 @@ export default function Home() {
           <span>光点计划</span>
         </a>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="主导航">
+        <nav className="site-nav" aria-label="主导航">
           <a href="#paths">活动方向</a>
           <a href="#about">如何参与</a>
           <a href="#campus">校内支持</a>
@@ -97,7 +97,7 @@ export default function Home() {
         <ActionLink
           href="/rank/"
           aria-label="查看学习进度"
-          className="h-11 rounded-full border-ink/20 bg-white/45 px-5 text-ink shadow-none hover:border-blue/35 hover:bg-white/80 hover:text-blue"
+          className="site-header-action"
         >
           学习进度 <ArrowIcon direction="right" />
         </ActionLink>

@@ -146,7 +146,12 @@ const rankOutputDirectory = join(outputDirectory, 'rank');
 const rankAssetsDirectory = join(rankOutputDirectory, 'assets');
 mkdirSync(rankAssetsDirectory, { recursive: true });
 
-const rankCss = readFileSync(join(rankSourceDirectory, 'rank.css'));
+const sharedShellCss = readFileSync(join(projectRoot, 'app/site-shell.css'));
+const rankCss = Buffer.concat([
+  sharedShellCss,
+  Buffer.from('\n'),
+  readFileSync(join(rankSourceDirectory, 'rank.css')),
+]);
 const rankScript = readFileSync(join(rankSourceDirectory, 'rank.js'));
 const rankCssHash = createHash('sha256')
   .update(rankCss)
