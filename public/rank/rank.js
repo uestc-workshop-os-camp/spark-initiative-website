@@ -14,6 +14,8 @@ const elements = {
   stageTabs: [...document.querySelectorAll('.stage-tab')],
   stageName: document.querySelector('#stage-name'),
   participantCount: document.querySelector('#participant-count'),
+  updatedAt: document.querySelector('#updated-at'),
+  updateInterval: document.querySelector('#update-interval'),
   search: document.querySelector('#participant-search'),
   refresh: document.querySelector('#refresh-button'),
   head: document.querySelector('#rank-head'),
@@ -30,6 +32,8 @@ const state = {
   query: '',
   page: 1,
   data: new Map(),
+  updatedAt: null,
+  refreshIntervalSeconds: 15 * 60,
   loading: false,
   error: null,
 };
@@ -73,6 +77,28 @@ function formatTime(value) {
   }).format(date);
 }
 
+function formatUpdatedAt(value) {
+  const timestamp = number(value);
+  if (!timestamp) return '正在同步';
+  const date = new Date(timestamp * 1000);
+  if (Number.isNaN(date.getTime())) return '时间未知';
+  return new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
+}
+
+function formatRefreshInterval(value) {
+  const seconds = Math.max(1, Math.round(number(value, 15 * 60)));
+  if (seconds % 3600 === 0) return `每 ${seconds / 3600} 小时自动更新`;
+  if (seconds % 60 === 0) return `每 ${seconds / 60} 分钟自动更新`;
+  return `每 ${seconds} 秒自动更新`;
+}
+
 function initials(username) {
   return String(username).replace(/[^a-z0-9]/gi, '').slice(0, 2) || 'OS';
 }
@@ -112,7 +138,14 @@ async function fetchPage(mode, page) {
     if (payload?.code !== 200 || !Array.isArray(payload.data)) {
       throw new Error('Unexpected response');
     }
-    return payload.data;
+    return {
+      rows: payload.data,
+      updatedAt: number(payload.updated_at) || null,
+      refreshIntervalSeconds: number(
+        payload.refresh_interval_seconds,
+        15 * 60,
+      ),
+    };
   } finally {
     clearTimeout(timer);
   }
@@ -120,12 +153,16 @@ async function fetchPage(mode, page) {
 
 async function fetchAllScores(mode) {
   const rows = [];
+  let updatedAt = null;
+  let refreshIntervalSeconds = 15 * 60;
   for (let page = 1; page <= MAX_API_PAGES; page += 1) {
-    const batch = await fetchPage(mode, page);
-    rows.push(...batch);
-    if (batch.length < API_PAGE_SIZE) break;
+    const result = await fetchPage(mode, page);
+    rows.push(...result.rows);
+    updatedAt = result.updatedAt || updatedAt;
+    refreshIntervalSeconds = result.refreshIntervalSeconds;
+    if (result.rows.length < API_PAGE_SIZE) break;
   }
-  return rows;
+  return { rows, updatedAt, refreshIntervalSeconds };
 }
 
 function setLoading(isLoading) {
@@ -155,8 +192,10 @@ async function loadStage(force = false) {
   setLoading(true);
   state.error = null;
   try {
-    const rows = await fetchAllScores(stageConfig[state.stage].mode);
-    state.data.set(state.stage, rows);
+    const result = await fetchAllScores(stageConfig[state.stage].mode);
+    state.data.set(state.stage, result.rows);
+    state.updatedAt = result.updatedAt;
+    state.refreshIntervalSeconds = result.refreshIntervalSeconds;
   } catch (error) {
     state.error = error;
   } finally {
@@ -320,6 +359,12 @@ function renderMeta() {
   const rows = state.data.get(state.stage) || [];
   elements.stageName.textContent = stageConfig[state.stage].label;
   elements.participantCount.textContent = state.error ? '—' : `${rows.length} 位`;
+  elements.updatedAt.textContent = state.error
+    ? '暂时无法读取'
+    : formatUpdatedAt(state.updatedAt);
+  elements.updateInterval.textContent = formatRefreshInterval(
+    state.refreshIntervalSeconds,
+  );
 }
 
 function render() {
