@@ -427,6 +427,11 @@ h1 {
   width: 25%;
 }
 
+.rank-table th:nth-child(3),
+.rank-table td:nth-child(3) {
+  width: 150px;
+}
+
 .rank-number {
   display: inline-grid;
   width: 38px;
@@ -889,7 +894,9 @@ tr[data-rank='3'] .rank-number {
   .rank-table th:first-child,
   .rank-table td:first-child,
   .rank-table th:nth-child(2),
-  .rank-table td:nth-child(2) {
+  .rank-table td:nth-child(2),
+  .rank-table th:nth-child(3),
+  .rank-table td:nth-child(3) {
     width: auto;
     height: auto;
     border: 0;
