@@ -226,22 +226,20 @@ export default function Home() {
               </ul>
               <div className="path-card-links">
                 <ActionLink
+                  href="/os/"
+                  aria-label="开始 OS 实验"
+                  className="path-link-button path-link-internal h-11 rounded-full bg-blue px-5 !text-white hover:bg-blue/90"
+                >
+                  开始实验 <ArrowIcon direction="right" />
+                </ActionLink>
+                <ActionLink
                   href="https://github.com/uestc-workshop-os-camp"
                   target="_blank"
                   rel="noreferrer"
-                  aria-label="查看校内活动仓库"
-                  className="path-link-button h-11 rounded-full bg-ink px-5 !text-white hover:bg-blue"
-                >
-                  校内活动仓库 <ArrowIcon direction="up-right" />
-                </ActionLink>
-                <ActionLink
-                  href="https://opencamp.cn/os2edu/camp/2026spring"
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="查看 OpenCamp"
+                  aria-label="阅读 OS 活动说明"
                   className="path-link-button h-11 rounded-full border-ink/20 bg-white/25 px-5 hover:bg-white/55"
                 >
-                  查看 OpenCamp <ArrowIcon direction="up-right" />
+                  活动说明 <ArrowIcon direction="up-right" />
                 </ActionLink>
               </div>
             </div>

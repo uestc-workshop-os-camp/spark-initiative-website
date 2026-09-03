@@ -176,38 +176,35 @@ writeCompressed(join(rankOutputDirectory, 'index.html'), rankHtml);
 writeCompressed(join(rankAssetsDirectory, rankCssFilename), rankCss);
 writeCompressed(join(rankAssetsDirectory, rankScriptFilename), rankScript);
 
-const campSourceDirectory = join(projectRoot, 'public/camp');
-const campOutputDirectory = join(outputDirectory, 'camp');
-const campAssetsDirectory = join(campOutputDirectory, 'assets');
-mkdirSync(campAssetsDirectory, { recursive: true });
+const osSourceDirectory = join(projectRoot, 'public/os');
+const osOutputDirectory = join(outputDirectory, 'os');
+const osAssetsDirectory = join(osOutputDirectory, 'assets');
+mkdirSync(osAssetsDirectory, { recursive: true });
 
-const campCss = Buffer.concat([
+const osCss = Buffer.concat([
   sharedShellCss,
   Buffer.from('\n'),
-  readFileSync(join(campSourceDirectory, 'camp.css')),
+  readFileSync(join(osSourceDirectory, 'os.css')),
 ]);
-const campScript = readFileSync(join(campSourceDirectory, 'camp.js'));
-const campCssHash = createHash('sha256')
-  .update(campCss)
+const osScript = readFileSync(join(osSourceDirectory, 'os.js'));
+const osCssHash = createHash('sha256').update(osCss).digest('hex').slice(0, 10);
+const osScriptHash = createHash('sha256')
+  .update(osScript)
   .digest('hex')
   .slice(0, 10);
-const campScriptHash = createHash('sha256')
-  .update(campScript)
-  .digest('hex')
-  .slice(0, 10);
-const campCssFilename = `camp.${campCssHash}.css`;
-const campScriptFilename = `camp.${campScriptHash}.js`;
-const campHtml = readFileSync(join(campSourceDirectory, 'index.html'), 'utf8')
-  .replace('__CAMP_CSS__', `/camp/assets/${campCssFilename}`)
-  .replace('__CAMP_JS__', `/camp/assets/${campScriptFilename}`);
+const osCssFilename = `os.${osCssHash}.css`;
+const osScriptFilename = `os.${osScriptHash}.js`;
+const osHtml = readFileSync(join(osSourceDirectory, 'index.html'), 'utf8')
+  .replace('__OS_CSS__', `/os/assets/${osCssFilename}`)
+  .replace('__OS_JS__', `/os/assets/${osScriptFilename}`);
 
-writeCompressed(join(campOutputDirectory, 'index.html'), campHtml);
-writeCompressed(join(campAssetsDirectory, campCssFilename), campCss);
-writeCompressed(join(campAssetsDirectory, campScriptFilename), campScript);
+writeCompressed(join(osOutputDirectory, 'index.html'), osHtml);
+writeCompressed(join(osAssetsDirectory, osCssFilename), osCss);
+writeCompressed(join(osAssetsDirectory, osScriptFilename), osScript);
 
 writeFileSync(
   join(outputDirectory, '_headers'),
-  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/camp/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/camp/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
+  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/os/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/os/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
 );
 
 const htmlBytes = statSync(join(outputDirectory, 'index.html')).size;
@@ -222,13 +219,11 @@ const rankScriptBytes = statSync(
 const rankScriptBrotliBytes = statSync(
   join(rankAssetsDirectory, `${rankScriptFilename}.br`),
 ).size;
-const campScriptBytes = statSync(
-  join(campAssetsDirectory, campScriptFilename),
-).size;
-const campScriptBrotliBytes = statSync(
-  join(campAssetsDirectory, `${campScriptFilename}.br`),
+const osScriptBytes = statSync(join(osAssetsDirectory, osScriptFilename)).size;
+const osScriptBrotliBytes = statSync(
+  join(osAssetsDirectory, `${osScriptFilename}.br`),
 ).size;
 
 console.log(
-  `Static build complete: homepage HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B homepage JavaScript; rank JavaScript ${rankScriptBytes} B (${rankScriptBrotliBytes} B Brotli); camp JavaScript ${campScriptBytes} B (${campScriptBrotliBytes} B Brotli).`,
+  `Static build complete: homepage HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B homepage JavaScript; rank JavaScript ${rankScriptBytes} B (${rankScriptBrotliBytes} B Brotli); OS JavaScript ${osScriptBytes} B (${osScriptBrotliBytes} B Brotli).`,
 );

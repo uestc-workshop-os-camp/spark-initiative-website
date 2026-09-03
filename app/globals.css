@@ -1116,6 +1116,9 @@ h1 {
 .closing-actions [data-slot='button']:hover [data-icon='inline-end'] {
   transform: translate(3px, -3px);
 }
+.path-card-links .path-link-internal:hover [data-icon='inline-end'] {
+  transform: translateX(3px);
+}
 
 @keyframes rotate {
   to {

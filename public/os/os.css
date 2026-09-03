@@ -152,13 +152,76 @@ h1 {
   line-height: 1.82;
 }
 
+.readme-note {
+  display: grid;
+  min-height: 72px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  border-top: 1px solid var(--line);
+  padding: 22px 4px 8px;
+}
+
+.readme-note-label {
+  display: inline-flex;
+  align-items: center;
+  color: #666862;
+  font-family: 'Spark Geist Mono', ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 620;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.readme-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.readme-note strong {
+  color: var(--ink);
+  font-weight: 620;
+}
+
+.readme-note a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-bottom: 1px solid rgba(16, 18, 22, 0.24);
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.readme-note a:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.readme-note a:focus-visible {
+  outline: 3px solid rgba(42, 78, 246, 0.2);
+  outline-offset: 4px;
+}
+
+.readme-note a svg {
+  width: 15px;
+  height: 15px;
+}
+
 .notice {
   display: flex;
   min-height: 54px;
   align-items: center;
   gap: 12px;
   margin: 0 0 18px;
-  border: 1px solid rgba(255, 122, 92, 0.35);
+  border: 0;
   border-radius: 16px;
   background: #fff2ed;
   padding: 12px 18px;
@@ -172,7 +235,6 @@ h1 {
 }
 
 .notice.is-info {
-  border-color: rgba(42, 78, 246, 0.22);
   background: #eff3ff;
   color: #253a8d;
 }
@@ -686,6 +748,22 @@ h1 {
 }
 
 @media (max-width: 720px) {
+  .readme-note {
+    grid-template-columns: 1fr auto;
+    gap: 8px 20px;
+    padding-block: 16px;
+  }
+
+  .readme-note p {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+
+  .readme-note a {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
   .account-panel {
     grid-template-columns: 58px minmax(0, 1fr);
     gap: 20px;
@@ -741,6 +819,22 @@ h1 {
 
   .intro-copy {
     font-size: 15px;
+  }
+
+  .readme-note {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding-inline: 4px;
+  }
+
+  .readme-note p,
+  .readme-note a {
+    grid-row: auto;
+    grid-column: auto;
+  }
+
+  .readme-note a {
+    width: fit-content;
   }
 
   .account-panel,
