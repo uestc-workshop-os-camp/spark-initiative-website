@@ -92,7 +92,7 @@ copyFileSync(
   join(outputDirectory, 'og.png'),
 );
 
-const title = '光点计划 IV｜让对系统的好奇，有地方发生。';
+const title = '光点计划 IV｜让对系统的好奇，在此点燃。';
 const description =
   '光点计划 IV：OS 方向以 rCore 为学习材料，RDMA 方向以 RDMA101 为学习材料。';
 const siteOrigin = (process.env.SITE_URL ?? 'https://csinfra.cn').replace(

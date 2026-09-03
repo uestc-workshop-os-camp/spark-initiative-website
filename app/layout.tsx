@@ -29,7 +29,7 @@ const geistMono = localFont({
 
 export function generateMetadata(): Metadata {
   const siteOrigin = process.env.SITE_URL ?? 'http://localhost:3001';
-  const title = '光点计划 IV｜让对系统的好奇，有地方发生。';
+  const title = '光点计划 IV｜让对系统的好奇，在此点燃。';
   const description =
     '光点计划 IV 面向对计算机系统感兴趣的校内同学。2026 年设 OS 与 RDMA 两个方向，学习材料分别为 rCore 与 RDMA101。';
 

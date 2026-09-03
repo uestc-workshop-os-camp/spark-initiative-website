@@ -113,7 +113,7 @@ export default function Home() {
           <h1 id="hero-title">
             让对系统的<span className="accent-word">好奇</span>，
             <br />
-            有地方发生。
+            在此点燃。
           </h1>
 
           <p className="hero-lede">
