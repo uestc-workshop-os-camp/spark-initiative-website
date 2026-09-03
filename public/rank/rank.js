@@ -17,7 +17,6 @@ const elements = {
   updatedAt: document.querySelector('#updated-at'),
   updateInterval: document.querySelector('#update-interval'),
   search: document.querySelector('#participant-search'),
-  refresh: document.querySelector('#refresh-button'),
   head: document.querySelector('#rank-head'),
   body: document.querySelector('#rank-body'),
   range: document.querySelector('#range-label'),
@@ -100,7 +99,11 @@ function formatRefreshInterval(value) {
 }
 
 function initials(username) {
-  return String(username).replace(/[^a-z0-9]/gi, '').slice(0, 2) || 'OS';
+  return (
+    String(username)
+      .replace(/[^a-z0-9]/gi, '')
+      .slice(0, 2) || 'OS'
+  );
 }
 
 function githubAvatarURL(value) {
@@ -128,11 +131,14 @@ async function fetchPage(mode, page) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 5000);
   try {
-    const response = await fetch(`/api/scores/${page}/${API_PAGE_SIZE}/${mode}`, {
-      cache: 'no-store',
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    });
+    const response = await fetch(
+      `/api/scores/${page}/${API_PAGE_SIZE}/${mode}`,
+      {
+        cache: 'no-store',
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      },
+    );
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
     if (payload?.code !== 200 || !Array.isArray(payload.data)) {
@@ -141,10 +147,7 @@ async function fetchPage(mode, page) {
     return {
       rows: payload.data,
       updatedAt: number(payload.updated_at) || null,
-      refreshIntervalSeconds: number(
-        payload.refresh_interval_seconds,
-        15 * 60,
-      ),
+      refreshIntervalSeconds: number(payload.refresh_interval_seconds, 15 * 60),
     };
   } finally {
     clearTimeout(timer);
@@ -167,8 +170,6 @@ async function fetchAllScores(mode) {
 
 function setLoading(isLoading) {
   state.loading = isLoading;
-  elements.refresh.classList.toggle('is-loading', isLoading);
-  elements.refresh.disabled = isLoading;
   if (isLoading && !state.data.has(state.stage)) {
     elements.participantCount.textContent = '—';
     elements.body.innerHTML = `
@@ -214,7 +215,11 @@ function setDirection(direction) {
   });
   elements.osPanel.hidden = direction !== 'os';
   elements.rdmaPanel.hidden = direction !== 'rdma';
-  history.replaceState(null, '', direction === 'rdma' ? '#rdma' : location.pathname);
+  history.replaceState(
+    null,
+    '',
+    direction === 'rdma' ? '#rdma' : location.pathname,
+  );
 }
 
 function setStage(stage) {
@@ -237,7 +242,9 @@ function getVisibleRows() {
   const query = state.query.trim().toLowerCase();
   if (!query) return rows;
   return rows.filter((row) =>
-    String(row.username || '').toLowerCase().includes(query),
+    String(row.username || '')
+      .toLowerCase()
+      .includes(query),
   );
 }
 
@@ -358,7 +365,9 @@ function renderRows() {
 function renderMeta() {
   const rows = state.data.get(state.stage) || [];
   elements.stageName.textContent = stageConfig[state.stage].label;
-  elements.participantCount.textContent = state.error ? '—' : `${rows.length} 位`;
+  elements.participantCount.textContent = state.error
+    ? '—'
+    : `${rows.length} 位`;
   elements.updatedAt.textContent = state.error
     ? '暂时无法读取'
     : formatUpdatedAt(state.updatedAt);
@@ -393,7 +402,9 @@ elements.stageTabs.forEach((tab) => {
     event.preventDefault();
     const nextStage = state.stage === 'rust' ? 'rcore' : 'rust';
     setStage(nextStage);
-    elements.stageTabs.find((item) => item.dataset.stage === nextStage)?.focus();
+    elements.stageTabs
+      .find((item) => item.dataset.stage === nextStage)
+      ?.focus();
   });
 });
 
@@ -402,8 +413,6 @@ elements.search.addEventListener('input', (event) => {
   state.page = 1;
   renderRows();
 });
-
-elements.refresh.addEventListener('click', () => loadStage(true));
 
 elements.previous.addEventListener('click', () => {
   if (state.page <= 1) return;
@@ -424,6 +433,9 @@ setDirection(state.direction);
 renderHead();
 void loadStage();
 
-setInterval(() => {
-  if (state.direction === 'os' && !document.hidden) void loadStage(true);
-}, 15 * 60 * 1000);
+setInterval(
+  () => {
+    if (state.direction === 'os' && !document.hidden) void loadStage(true);
+  },
+  15 * 60 * 1000,
+);

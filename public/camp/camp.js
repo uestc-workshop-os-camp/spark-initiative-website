@@ -12,8 +12,17 @@ const loginName = document.querySelector('#github-login-name');
 const logoutButton = document.querySelector('#logout-button');
 const notice = document.querySelector('#notice');
 const noticeCopy = document.querySelector('#notice-copy');
+const recreateDialog = document.querySelector('#recreate-dialog');
+const recreateForm = document.querySelector('#recreate-form');
+const recreateRepositoryName = document.querySelector(
+  '#recreate-repository-name',
+);
+const recreateConfirmation = document.querySelector('#recreate-confirmation');
+const recreateConfirm = document.querySelector('#recreate-confirm');
+const recreateCancel = document.querySelector('#recreate-cancel');
 
 let csrfToken = '';
+let pendingRecreation = null;
 
 class ApiError extends Error {
   constructor(status, code, message) {
@@ -104,6 +113,23 @@ const makeClaimButton = (phase, label, disabled = false) => {
   return button;
 };
 
+const makeRecreateButton = (phase, claim) => {
+  const button = document.createElement('button');
+  button.className = 'recreate-action';
+  button.type = 'button';
+  button.textContent = '重新创建';
+  button.setAttribute('aria-label', `重新创建仓库 ${claim.repository_name}`);
+  button.addEventListener('click', () => {
+    pendingRecreation = { phase, claim, button };
+    recreateRepositoryName.textContent = claim.repository_name;
+    recreateConfirmation.value = '';
+    recreateConfirm.disabled = true;
+    recreateDialog.showModal();
+    recreateConfirmation.focus();
+  });
+  return button;
+};
+
 const makeLoginButton = () => {
   const link = document.createElement('a');
   link.className = 'phase-link primary';
@@ -151,6 +177,7 @@ const updatePhase = (phase) => {
     if (claim.repository_url) {
       actions.append(makeLink('查看仓库', claim.repository_url));
     }
+    actions.append(makeRecreateButton(phase.key, claim));
     return;
   }
 
@@ -159,9 +186,11 @@ const updatePhase = (phase) => {
   if (claim.repository_url) {
     actions.append(makeLink('打开实验仓库', claim.repository_url, true));
   }
+  actions.append(makeRecreateButton(phase.key, claim));
 };
 
 const renderSignedOut = () => {
+  if (recreateDialog.open) recreateDialog.close();
   csrfToken = '';
   signedOutView.hidden = false;
   loginLink.hidden = false;
@@ -193,11 +222,49 @@ const friendlyError = (error) => {
     phase_closed: '这个阶段尚未开放。',
     repository_name_taken: '要创建的仓库名已经存在，请联系活动组织者。',
     login_changed: 'GitHub 用户名发生了变化，请联系活动组织者。',
+    claim_incomplete: '这个仓库尚未创建完成，请继续创建。',
+    repository_changed:
+      '仓库状态与创建记录不一致。为避免误删，请联系活动组织者。',
     github_unavailable: 'GitHub 暂时不可用，请稍后重试。',
     csrf_failed: '登录已过期，请刷新页面后重试。',
     internal_error: '服务暂时不可用，请稍后重试。',
   };
   return messages[error.code] ?? '这次没有创建成功，请稍后重试。';
+};
+
+const recreatePhase = async ({ phase, button }) => {
+  if (!csrfToken || button.disabled) return;
+
+  setNotice();
+  button.disabled = true;
+  button.classList.add('is-loading');
+  const previousLabel = button.textContent;
+  button.textContent = '正在重新创建';
+
+  try {
+    const result = await apiRequest(`/claim/${phase}/recreate`, {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': csrfToken },
+      body: '',
+    });
+    updatePhase({ key: phase, enabled: true, claim: result.claim });
+    setNotice(
+      result.claim.status === 'awaiting_acceptance'
+        ? '仓库已重新创建。请等待并接受 GitHub 的协作邀请。'
+        : '仓库已重新创建，可以继续实验。',
+      'info',
+    );
+  } catch (error) {
+    if (error instanceof ApiError && error.code === 'login_required') {
+      renderSignedOut();
+      setNotice('登录已过期，请重新登录。', 'info');
+      return;
+    }
+    setNotice(friendlyError(error));
+    button.disabled = false;
+    button.classList.remove('is-loading');
+    button.textContent = previousLabel;
+  }
 };
 
 const claimPhase = async (phase, button) => {
@@ -263,6 +330,34 @@ logoutButton.addEventListener('click', async () => {
   } finally {
     logoutButton.disabled = false;
   }
+});
+
+recreateConfirmation.addEventListener('input', () => {
+  recreateConfirm.disabled =
+    !pendingRecreation ||
+    recreateConfirmation.value !== pendingRecreation.claim.repository_name;
+});
+
+recreateCancel.addEventListener('click', () => recreateDialog.close());
+
+recreateDialog.addEventListener('close', () => {
+  recreateConfirmation.value = '';
+  recreateConfirm.disabled = true;
+  recreateRepositoryName.textContent = '';
+  pendingRecreation = null;
+});
+
+recreateForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (
+    !pendingRecreation ||
+    recreateConfirmation.value !== pendingRecreation.claim.repository_name
+  ) {
+    return;
+  }
+  const recreation = pendingRecreation;
+  recreateDialog.close();
+  void recreatePhase(recreation);
 });
 
 clearAuthQuery();

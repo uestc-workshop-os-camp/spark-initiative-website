@@ -53,8 +53,8 @@
           <h1 id="page-title">学习进度</h1>
         </div>
         <p class="intro-copy">
-          这里将汇总 OS 与 RDMA 两个方向的学习进度。目前已接入 OS
-          方向，RDMA 方向将在实验开放后接入。
+          这里将汇总 OS 与 RDMA 两个方向的学习进度。目前已接入 OS 方向，RDMA
+          方向将在实验开放后接入。
         </p>
       </section>
 
@@ -93,7 +93,11 @@
           aria-labelledby="direction-os"
         >
           <div class="rank-toolbar">
-            <div class="stage-tabs" role="tablist" aria-label="选择 OS 学习阶段">
+            <div
+              class="stage-tabs"
+              role="tablist"
+              aria-label="选择 OS 学习阶段"
+            >
               <button
                 class="stage-tab is-active"
                 type="button"
@@ -128,14 +132,6 @@
                   autocomplete="off"
                 />
               </label>
-              <button class="refresh-button" id="refresh-button" type="button">
-                <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="M20 6v5h-5" />
-                  <path d="M4 18v-5h5" />
-                  <path d="M6.1 9a7 7 0 0 1 11.6-2.6L20 11M4 13l2.3 4.6A7 7 0 0 0 17.9 15" />
-                </svg>
-                刷新
-              </button>
             </div>
           </div>
 
@@ -159,7 +155,9 @@
 
           <div class="table-frame">
             <table class="rank-table">
-              <caption class="sr-only">OS 方向学习进度排行榜</caption>
+              <caption class="sr-only">
+                OS 方向学习进度排行榜
+              </caption>
               <thead id="rank-head"></thead>
               <tbody id="rank-body">
                 <tr class="loading-row">
@@ -198,10 +196,13 @@
             <p class="kicker">RDMA / IN DEVELOPMENT</p>
             <h2>实验仍在开发</h2>
             <p>
-              RDMA 方向的进度页面将在实验开放后接入。现在可以先从
-              RDMA101 开始。
+              RDMA 方向的进度页面将在实验开放后接入。现在可以先从 RDMA101 开始。
             </p>
-            <a href="https://renfeng.org/RDMA101/" target="_blank" rel="noreferrer">
+            <a
+              href="https://renfeng.org/RDMA101/"
+              target="_blank"
+              rel="noreferrer"
+            >
               阅读 RDMA101
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M7 17 17 7M7 7h10v10" />

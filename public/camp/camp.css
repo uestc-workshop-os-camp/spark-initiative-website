@@ -242,6 +242,8 @@ h1 {
 .primary-action,
 .quiet-action,
 .claim-action,
+.recreate-action,
+.recreate-confirm,
 .phase-link {
   display: inline-flex;
   min-height: 52px;
@@ -289,6 +291,30 @@ h1 {
   background: transparent;
 }
 
+.recreate-action {
+  cursor: pointer;
+  border-color: rgba(16, 18, 22, 0.18);
+  background: transparent;
+  color: #565852;
+}
+
+.recreate-action:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 122, 92, 0.62);
+  background: rgba(255, 255, 255, 0.58);
+  color: #8b3324;
+}
+
+.recreate-action.is-loading::after {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(86, 88, 82, 0.25);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 760ms linear infinite;
+  content: '';
+}
+
 .quiet-action:hover {
   border-color: rgba(16, 18, 22, 0.34);
   background: #fff;
@@ -297,9 +323,113 @@ h1 {
 .primary-action:focus-visible,
 .quiet-action:focus-visible,
 .claim-action:focus-visible,
+.recreate-action:focus-visible,
+.recreate-confirm:focus-visible,
 .phase-link:focus-visible {
   outline: 3px solid rgba(42, 78, 246, 0.2);
   outline-offset: 3px;
+}
+
+.recreate-dialog {
+  width: min(calc(100% - 32px), 560px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--background);
+  padding: 0;
+  color: var(--ink);
+  box-shadow: 0 28px 80px rgba(16, 18, 22, 0.24);
+}
+
+.recreate-dialog::backdrop {
+  background: rgba(16, 18, 22, 0.42);
+  backdrop-filter: blur(4px);
+}
+
+.recreate-dialog-card {
+  padding: clamp(28px, 5vw, 44px);
+}
+
+.recreate-dialog-card h2 {
+  margin-bottom: 18px;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 550;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.recreate-warning {
+  margin-bottom: 28px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.recreate-warning code {
+  border-radius: 5px;
+  background: #eceae2;
+  padding: 2px 5px;
+  color: var(--ink);
+  font-family: 'Spark Geist Mono', ui-monospace, monospace;
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+.recreate-dialog-card label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.recreate-dialog-card input {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid rgba(16, 18, 22, 0.2);
+  border-radius: 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 16px;
+  color: var(--ink);
+  font-family: 'Spark Geist Mono', ui-monospace, monospace;
+  font-size: 15px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.recreate-dialog-card input:focus {
+  border-color: rgba(42, 78, 246, 0.58);
+  box-shadow: 0 0 0 4px rgba(42, 78, 246, 0.12);
+}
+
+.recreate-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.recreate-confirm {
+  cursor: pointer;
+  border-color: #9c3b2c;
+  background: #9c3b2c;
+  color: #fff;
+}
+
+.recreate-confirm:not(:disabled):hover {
+  transform: translateY(-2px);
+  background: #842f22;
+  box-shadow: 0 10px 24px rgba(111, 48, 36, 0.18);
+}
+
+.recreate-confirm:disabled {
+  cursor: not-allowed;
+  border-color: rgba(16, 18, 22, 0.1);
+  background: rgba(16, 18, 22, 0.12);
+  color: rgba(16, 18, 22, 0.48);
 }
 
 .phase-section,
@@ -663,6 +793,14 @@ h1 {
 
   .claim-notes li {
     padding-inline: 20px;
+  }
+
+  .recreate-dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .recreate-dialog-actions > * {
+    width: 100%;
   }
 }
 

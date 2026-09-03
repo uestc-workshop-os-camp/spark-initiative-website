@@ -64,6 +64,40 @@
         <span id="notice-copy"></span>
       </div>
 
+      <dialog class="recreate-dialog" id="recreate-dialog">
+        <form class="recreate-dialog-card" id="recreate-form" method="dialog">
+          <p class="eyebrow">RECREATE REPOSITORY</p>
+          <h2>重新创建仓库？</h2>
+          <p class="recreate-warning">
+            GitHub 上的仓库
+            <code id="recreate-repository-name"></code>
+            若仍存在，将被删除并从模板重新创建。仓库中的代码和提交不会保留；若仓库已经删除，则直接重新创建。
+          </p>
+          <label for="recreate-confirmation">输入仓库名称，确认继续</label>
+          <input
+            id="recreate-confirmation"
+            name="repository-name"
+            type="text"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+          />
+          <div class="recreate-dialog-actions">
+            <button class="quiet-action" id="recreate-cancel" type="button">
+              取消
+            </button>
+            <button
+              class="recreate-confirm"
+              id="recreate-confirm"
+              type="submit"
+              disabled
+            >
+              删除并重新创建
+            </button>
+          </div>
+        </form>
+      </dialog>
+
       <section class="account-panel" aria-label="GitHub 登录状态">
         <div class="account-visual" aria-hidden="true">
           <svg viewBox="0 0 24 24">
@@ -184,7 +218,10 @@
           <li>
             <div>
               <strong>等待协作邀请</strong>
-              <p>仓库创建后，请等待 GitHub 发来协作邀请。接受后，即可向仓库推送代码。</p>
+              <p>
+                仓库创建后，请等待 GitHub
+                发来协作邀请。接受后，即可向仓库推送代码。
+              </p>
             </div>
           </li>
         </ol>
