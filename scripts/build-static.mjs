@@ -186,25 +186,40 @@ const osCss = Buffer.concat([
   Buffer.from('\n'),
   readFileSync(join(osSourceDirectory, 'os.css')),
 ]);
-const osScript = readFileSync(join(osSourceDirectory, 'os.js'));
+const claimScript = readFileSync(join(projectRoot, 'public/claim.js'));
 const osCssHash = createHash('sha256').update(osCss).digest('hex').slice(0, 10);
-const osScriptHash = createHash('sha256')
-  .update(osScript)
+const claimScriptHash = createHash('sha256')
+  .update(claimScript)
   .digest('hex')
   .slice(0, 10);
 const osCssFilename = `os.${osCssHash}.css`;
-const osScriptFilename = `os.${osScriptHash}.js`;
+const claimScriptFilename = `claim.${claimScriptHash}.js`;
 const osHtml = readFileSync(join(osSourceDirectory, 'index.html'), 'utf8')
   .replace('__OS_CSS__', `/os/assets/${osCssFilename}`)
-  .replace('__OS_JS__', `/os/assets/${osScriptFilename}`);
+  .replace('__OS_JS__', `/os/assets/${claimScriptFilename}`);
 
 writeCompressed(join(osOutputDirectory, 'index.html'), osHtml);
 writeCompressed(join(osAssetsDirectory, osCssFilename), osCss);
-writeCompressed(join(osAssetsDirectory, osScriptFilename), osScript);
+writeCompressed(join(osAssetsDirectory, claimScriptFilename), claimScript);
+
+const rdmaSourceDirectory = join(projectRoot, 'public/rdma');
+const rdmaOutputDirectory = join(outputDirectory, 'rdma');
+const rdmaAssetsDirectory = join(rdmaOutputDirectory, 'assets');
+mkdirSync(rdmaAssetsDirectory, { recursive: true });
+
+const rdmaCssFilename = `rdma.${osCssHash}.css`;
+const rdmaScriptFilename = `claim.${claimScriptHash}.js`;
+const rdmaHtml = readFileSync(join(rdmaSourceDirectory, 'index.html'), 'utf8')
+  .replace('__RDMA_CSS__', `/rdma/assets/${rdmaCssFilename}`)
+  .replace('__RDMA_JS__', `/rdma/assets/${rdmaScriptFilename}`);
+
+writeCompressed(join(rdmaOutputDirectory, 'index.html'), rdmaHtml);
+writeCompressed(join(rdmaAssetsDirectory, rdmaCssFilename), osCss);
+writeCompressed(join(rdmaAssetsDirectory, rdmaScriptFilename), claimScript);
 
 writeFileSync(
   join(outputDirectory, '_headers'),
-  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/os/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/os/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
+  `/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rank/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/os/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/os/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/rdma/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/rdma/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/studios/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/og.png\n  Cache-Control: public, max-age=86400\n/index.html\n  Cache-Control: public, max-age=300, must-revalidate\n`,
 );
 
 const htmlBytes = statSync(join(outputDirectory, 'index.html')).size;
@@ -219,11 +234,13 @@ const rankScriptBytes = statSync(
 const rankScriptBrotliBytes = statSync(
   join(rankAssetsDirectory, `${rankScriptFilename}.br`),
 ).size;
-const osScriptBytes = statSync(join(osAssetsDirectory, osScriptFilename)).size;
-const osScriptBrotliBytes = statSync(
-  join(osAssetsDirectory, `${osScriptFilename}.br`),
+const claimScriptBytes = statSync(
+  join(osAssetsDirectory, claimScriptFilename),
+).size;
+const claimScriptBrotliBytes = statSync(
+  join(osAssetsDirectory, `${claimScriptFilename}.br`),
 ).size;
 
 console.log(
-  `Static build complete: homepage HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B homepage JavaScript; rank JavaScript ${rankScriptBytes} B (${rankScriptBrotliBytes} B Brotli); OS JavaScript ${osScriptBytes} B (${osScriptBrotliBytes} B Brotli).`,
+  `Static build complete: homepage HTML ${htmlBytes} B (${htmlBrotliBytes} B Brotli), CSS ${cssBytes} B (${cssBrotliBytes} B Brotli), 0 B homepage JavaScript; rank JavaScript ${rankScriptBytes} B (${rankScriptBrotliBytes} B Brotli); claim JavaScript ${claimScriptBytes} B (${claimScriptBrotliBytes} B Brotli).`,
 );

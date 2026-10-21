@@ -20,8 +20,10 @@ if (sourceFiles.length === 0) {
   sourceFiles.push(
     'app/page.tsx',
     'app/layout.tsx',
+    'public/claim.js',
     'public/rank/index.html',
     'public/rank/rank.js',
+    'public/rdma/index.html',
   );
 }
 const sourceText = sourceFiles

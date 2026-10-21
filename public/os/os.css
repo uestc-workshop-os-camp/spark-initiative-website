@@ -562,6 +562,11 @@ h1 {
   background: var(--rdma-soft);
 }
 
+#phase-rdma {
+  grid-column: 1 / -1;
+  background: var(--rdma-soft);
+}
+
 .phase-card-head {
   display: flex;
   align-items: center;

@@ -248,7 +248,7 @@ export default function Home() {
           <article id="rdma" className="path-card path-card-rdma">
             <div className="path-card-topline">
               <span>方向 02 · 2026 新探索</span>
-              <span className="coming-pill">教程已开放 · 实验开发中</span>
+              <span className="coming-pill">课程已开放</span>
             </div>
             <div>
               <p className="path-question">
@@ -270,7 +270,7 @@ export default function Home() {
                 </a>{' '}
                 编写、源于 Mooncake Transfer Engine
                 工程实践的教程。它面向希望理解、使用、运维或开发 RDMA
-                系统的读者，旨在提供一条相对完整的学习路径。配套实验正在开发中。
+                系统的读者，旨在提供一条相对完整的学习路径。
               </p>
             </div>
             <div className="path-card-footer">
@@ -279,15 +279,14 @@ export default function Home() {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-              <ActionLink
-                href="https://renfeng.org/RDMA101/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="阅读 RDMA101"
-                className="path-link-button h-11 rounded-full bg-ink px-5 !text-white hover:bg-blue"
-              >
-                阅读 RDMA101 <ArrowIcon direction="up-right" />
-              </ActionLink>
+              <div className="path-card-links">
+                <ActionLink href="/rdma/" aria-label="开始 RDMA 实验" className="path-link-button path-link-internal h-11 rounded-full bg-ink px-5 !text-white hover:bg-blue">
+                  开始实验 <ArrowIcon direction="right" />
+                </ActionLink>
+                <ActionLink href="https://renfeng.org/RDMA101/" target="_blank" rel="noreferrer" aria-label="阅读 RDMA101" className="path-link-button h-11 rounded-full border-ink/20 bg-white/25 px-5 hover:bg-white/55">
+                  阅读教程 <ArrowIcon direction="up-right" />
+                </ActionLink>
+              </div>
             </div>
           </article>
         </div>

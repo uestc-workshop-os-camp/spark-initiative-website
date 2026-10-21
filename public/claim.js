@@ -1,9 +1,12 @@
 const apiBase = '/api/classroom/v1';
+const returnTo = document.body.dataset.returnTo || '/os/';
 
-const phaseDefaults = {
-  rust: { title: 'Rust', card: document.querySelector('#phase-rust') },
-  rcore: { title: 'rCore', card: document.querySelector('#phase-rcore') },
-};
+const phaseDefaults = Object.fromEntries(
+  [...document.querySelectorAll('[data-phase-key]')].map((card) => [
+    card.dataset.phaseKey,
+    { title: card.dataset.phaseTitle, card },
+  ]),
+);
 
 const signedOutView = document.querySelector('#signed-out-view');
 const signedInView = document.querySelector('#signed-in-view');
@@ -133,7 +136,7 @@ const makeRecreateButton = (phase, claim) => {
 const makeLoginButton = () => {
   const link = document.createElement('a');
   link.className = 'phase-link primary';
-  link.href = `${apiBase}/auth/login`;
+  link.href = `${apiBase}/auth/login?return_to=${encodeURIComponent(returnTo)}`;
   link.innerHTML = `登录后创建${icons.arrow}`;
   return link;
 };

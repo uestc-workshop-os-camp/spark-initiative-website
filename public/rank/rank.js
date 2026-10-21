@@ -3,20 +3,32 @@ const API_PAGE_SIZE = 200;
 const MAX_API_PAGES = 10;
 
 const stageConfig = {
-  rust: { label: 'Rust 基础', mode: 1 },
-  rcore: { label: 'rCore 实验', mode: 2 },
+  rust: {
+    label: 'Rust 基础',
+    mode: 1,
+    caption: 'OS 方向 Rust 基础学习进度排行榜',
+  },
+  rcore: {
+    label: 'rCore 实验',
+    mode: 2,
+    caption: 'OS 方向 rCore 实验学习进度排行榜',
+  },
+  rdma: { label: 'RDMA101 Labs', mode: 3, caption: 'RDMA 方向学习进度排行榜' },
 };
 
 const elements = {
   directionTabs: [...document.querySelectorAll('.direction-tab')],
   osPanel: document.querySelector('#panel-os'),
   rdmaPanel: document.querySelector('#panel-rdma'),
+  rankContent: document.querySelector('#rank-content'),
+  stageTabsContainer: document.querySelector('.stage-tabs'),
   stageTabs: [...document.querySelectorAll('.stage-tab')],
   stageName: document.querySelector('#stage-name'),
   participantCount: document.querySelector('#participant-count'),
   updatedAt: document.querySelector('#updated-at'),
   updateInterval: document.querySelector('#update-interval'),
   search: document.querySelector('#participant-search'),
+  caption: document.querySelector('#rank-caption'),
   head: document.querySelector('#rank-head'),
   body: document.querySelector('#rank-body'),
   range: document.querySelector('#range-label'),
@@ -31,10 +43,9 @@ const state = {
   query: '',
   page: 1,
   data: new Map(),
-  updatedAt: null,
-  refreshIntervalSeconds: 15 * 60,
-  loading: false,
-  error: null,
+  metadata: new Map(),
+  errors: new Map(),
+  loadingStages: new Set(),
 };
 
 function escapeHTML(value) {
@@ -168,9 +179,10 @@ async function fetchAllScores(mode) {
   return { rows, updatedAt, refreshIntervalSeconds };
 }
 
-function setLoading(isLoading) {
-  state.loading = isLoading;
-  if (isLoading && !state.data.has(state.stage)) {
+function setLoading(stage, isLoading) {
+  if (isLoading) state.loadingStages.add(stage);
+  else state.loadingStages.delete(stage);
+  if (isLoading && stage === state.stage && !state.data.has(stage)) {
     elements.participantCount.textContent = '—';
     elements.body.innerHTML = `
       <tr class="loading-row">
@@ -184,29 +196,38 @@ function setLoading(isLoading) {
 }
 
 async function loadStage(force = false) {
-  if (state.loading) return;
-  if (!force && state.data.has(state.stage)) {
+  const stage = state.stage;
+  if (state.loadingStages.has(stage)) return;
+  if (!force && state.data.has(stage)) {
     render();
     return;
   }
 
-  setLoading(true);
-  state.error = null;
+  setLoading(stage, true);
+  state.errors.delete(stage);
   try {
-    const result = await fetchAllScores(stageConfig[state.stage].mode);
-    state.data.set(state.stage, result.rows);
-    state.updatedAt = result.updatedAt;
-    state.refreshIntervalSeconds = result.refreshIntervalSeconds;
+    const result = await fetchAllScores(stageConfig[stage].mode);
+    state.data.set(stage, result.rows);
+    state.metadata.set(stage, {
+      updatedAt: result.updatedAt,
+      refreshIntervalSeconds: result.refreshIntervalSeconds,
+    });
   } catch (error) {
-    state.error = error;
+    state.errors.set(stage, error);
   } finally {
-    setLoading(false);
-    render();
+    setLoading(stage, false);
+    if (state.stage === stage) render();
   }
 }
 
 function setDirection(direction) {
   state.direction = direction;
+  const nextStage =
+    direction === 'rdma'
+      ? 'rdma'
+      : state.stage === 'rdma'
+        ? 'rust'
+        : state.stage;
   elements.directionTabs.forEach((tab) => {
     const active = tab.dataset.direction === direction;
     tab.classList.toggle('is-active', active);
@@ -215,11 +236,16 @@ function setDirection(direction) {
   });
   elements.osPanel.hidden = direction !== 'os';
   elements.rdmaPanel.hidden = direction !== 'rdma';
+  (direction === 'rdma' ? elements.rdmaPanel : elements.osPanel).append(
+    elements.rankContent,
+  );
+  elements.stageTabsContainer.hidden = direction === 'rdma';
   history.replaceState(
     null,
     '',
     direction === 'rdma' ? '#rdma' : location.pathname,
   );
+  if (state.stage !== nextStage) setStage(nextStage);
 }
 
 function setStage(stage) {
@@ -250,21 +276,51 @@ function getVisibleRows() {
 
 function renderHead() {
   elements.head.innerHTML =
-    state.stage === 'rust'
+    state.stage === 'rdma'
       ? `<tr>
+        <th scope="col">排名</th>
+        <th scope="col">参与者</th>
+        <th scope="col">总进度</th>
+        <th scope="col">实验进度</th>
+        <th scope="col">最后提交</th>
+      </tr>`
+      : state.stage === 'rust'
+        ? `<tr>
           <th scope="col">排名</th>
           <th scope="col">参与者</th>
           <th scope="col">完成</th>
           <th scope="col">完成度</th>
           <th scope="col">最后提交</th>
         </tr>`
-      : `<tr>
+        : `<tr>
           <th scope="col">排名</th>
           <th scope="col">参与者</th>
           <th scope="col">总进度</th>
           <th scope="col">章节进度</th>
           <th scope="col">最后提交</th>
         </tr>`;
+}
+
+function rdmaRow(row, fallbackRank) {
+  const rank = Math.max(1, number(row.rank, fallbackRank));
+  const rawUsername = String(row.username || 'unknown');
+  const username = escapeHTML(rawUsername);
+  const labs = Array.from({ length: 8 }, (_, index) => `lab${index + 1}`);
+  const labMarkup = labs
+    .map(
+      (lab) =>
+        `<span>${lab.toUpperCase()}<b>${Math.round(percentage(row[lab]))}%</b></span>`,
+    )
+    .join('');
+  return `<tr data-rank="${rank}">
+    <td class="cell-rank"><span class="rank-number">${rank}</span></td>
+    <td class="cell-participant"><span class="participant">
+      ${participantMark(row, rawUsername)}<strong>${username}</strong>
+    </span></td>
+    <td class="cell-score" data-label="总进度"><span class="score-value">${compactNumber(row.total)} <span>/ 800</span></span></td>
+    <td class="cell-chapters" data-label="实验进度"><span class="chapter-list">${labMarkup}</span></td>
+    <td class="cell-time" data-label="最后提交"><span class="time-value">${formatTime(row.pass_time)}</span></td>
+  </tr>`;
 }
 
 function rustRow(row, fallbackRank) {
@@ -323,7 +379,7 @@ function rcoreRow(row, fallbackRank) {
 }
 
 function renderRows() {
-  if (state.error) {
+  if (state.errors.has(state.stage)) {
     elements.body.innerHTML = `<tr class="empty-state"><td colspan="5">
       <strong>暂时无法读取进度</strong>
       <span>请稍后刷新重试。</span>
@@ -343,7 +399,12 @@ function renderRows() {
       <span>${state.query ? '换一个关键词试试。' : '第一条记录出现后，会在这里展示。'}</span>
     </td></tr>`;
   } else {
-    const renderer = state.stage === 'rust' ? rustRow : rcoreRow;
+    const renderer =
+      state.stage === 'rust'
+        ? rustRow
+        : state.stage === 'rdma'
+          ? rdmaRow
+          : rcoreRow;
     elements.body.innerHTML = pageRows
       .map((row, index) => renderer(row, start + index + 1))
       .join('');
@@ -364,15 +425,19 @@ function renderRows() {
 
 function renderMeta() {
   const rows = state.data.get(state.stage) || [];
+  const metadata = state.metadata.get(state.stage) || {
+    updatedAt: null,
+    refreshIntervalSeconds: 15 * 60,
+  };
+  const hasError = state.errors.has(state.stage);
   elements.stageName.textContent = stageConfig[state.stage].label;
-  elements.participantCount.textContent = state.error
-    ? '—'
-    : `${rows.length} 位`;
-  elements.updatedAt.textContent = state.error
+  elements.caption.textContent = stageConfig[state.stage].caption;
+  elements.participantCount.textContent = hasError ? '—' : `${rows.length} 位`;
+  elements.updatedAt.textContent = hasError
     ? '暂时无法读取'
-    : formatUpdatedAt(state.updatedAt);
+    : formatUpdatedAt(metadata.updatedAt);
   elements.updateInterval.textContent = formatRefreshInterval(
-    state.refreshIntervalSeconds,
+    metadata.refreshIntervalSeconds,
   );
 }
 
@@ -435,7 +500,7 @@ void loadStage();
 
 setInterval(
   () => {
-    if (state.direction === 'os' && !document.hidden) void loadStage(true);
+    if (!document.hidden) void loadStage(true);
   },
   15 * 60 * 1000,
 );

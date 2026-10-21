@@ -245,6 +245,10 @@ h1 {
   padding: 4px;
 }
 
+.stage-tabs[hidden] {
+  display: none;
+}
+
 .stage-tab {
   min-width: 96px;
   min-height: 42px;
@@ -660,9 +664,8 @@ tr[data-rank='3'] .rank-number {
 
 .rdma-panel {
   position: relative;
-  min-height: 540px;
-  overflow: hidden;
-  background: var(--rdma-soft);
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .rdma-signal {
@@ -985,7 +988,7 @@ tr[data-rank='3'] .rank-number {
   }
 
   .rdma-panel {
-    min-height: 480px;
+    min-height: 0;
   }
 
   .rdma-message {
